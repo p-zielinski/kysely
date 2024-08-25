@@ -85,13 +85,15 @@ type IfNullable<T, K> = undefined extends T ? K : null extends T ? K : never
 /**
  * Evaluates to `K` if `T` can't be `null` or `undefined`.
  */
-type IfNotNullable<T, K> = undefined extends T
-  ? never
-  : null extends T
-    ? never
-    : T extends never
-      ? never
-      : K
+type IsNullable<T> = T extends null
+  ? true
+  : T extends null | number
+    ? true
+    : T extends null | string
+      ? true
+      : T extends null | boolean
+        ? true
+        : never;
 
 /**
  * Evaluates to `K` if `T` isn't `never`.
@@ -106,15 +108,15 @@ export type UpdateType<T> = T extends ColumnType<any, any, infer U> ? U : T
  * Keys of `R` whose `InsertType` values can be `null` or `undefined`.
  */
 export type NullableInsertKeys<R> = {
-  [K in keyof R]: IfNullable<InsertType<R[K]>, K>
+  [K in keyof R]: IsNullable<InsertType<R[K]>> extends never ? never : K;
 }[keyof R]
 
 /**
  * Keys of `R` whose `InsertType` values can't be `null` or `undefined`.
  */
-export type NonNullableInsertKeys<R> = {
-  [K in keyof R]: IfNotNullable<InsertType<R[K]>, K>
-}[keyof R]
+export type NonNullableInsertKeys<T> = {
+  [K in keyof T]: IsNullable<InsertType<T[K]>> extends never ? K : never;
+}[keyof R];
 
 /**
  * Keys of `R` whose `SelectType` values are not `never`
