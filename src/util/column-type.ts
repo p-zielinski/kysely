@@ -116,7 +116,7 @@ export type NullableInsertKeys<R> = {
  */
 export type NonNullableInsertKeys<T> = {
   [K in keyof T]: IsNullable<InsertType<T[K]>> extends never ? K : never;
-}[keyof R];
+}[keyof T];
 
 /**
  * Keys of `R` whose `SelectType` values are not `never`
